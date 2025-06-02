@@ -53,11 +53,13 @@ INFO = {
     ),
 }
 
+def get_specialists_keyboard():
+    return ReplyKeyboardMarkup([[s] for s in SPECIALISTS], resize_keyboard=True, one_time_keyboard=True)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    kb = [[s] for s in SPECIALISTS]
     await update.message.reply_text(
         "Выберите специалиста:",
-        reply_markup=ReplyKeyboardMarkup(kb, one_time_keyboard=True, resize_keyboard=True)
+        reply_markup=get_specialists_keyboard()
     )
 
 async def handle_specialist(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -71,16 +73,19 @@ async def handle_specialist(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ])
         )
     else:
-        await update.message.reply_text("Пожалуйста, выберите специалиста из списка.")
+        await update.message.reply_text(
+            "Пожалуйста, выберите специалиста из списка.",
+            reply_markup=get_specialists_keyboard()
+        )
 
 async def handle_audit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     if query.data == "choose_specialist":
-        kb = [[s] for s in SPECIALISTS]
         await query.answer()
-        await query.edit_message_text(
+        # Отправляем новое сообщение с клавиатурой выбора специалистов
+        await query.message.reply_text(
             "Выберите специалиста:",
-            reply_markup=ReplyKeyboardMarkup(kb, one_time_keyboard=True, resize_keyboard=True)
+            reply_markup=get_specialists_keyboard()
         )
     elif query.data.startswith("audit_"):
         await query.answer()
