@@ -1,17 +1,8 @@
-import logging
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, filters
 
-# --- Твой токен ---
 TOKEN = "7891087983:AAHJhRBlUHZEF1cb_76sTzl4IJF_RTPUwBk"
 
-# --- Логирование ---
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-
-# --- Основные сценарии ---
 SPECIALISTS = [
     "Маркетолог",
     "SMM-специалист",
@@ -61,7 +52,6 @@ INFO = {
     ),
 }
 
-# --- Хендлеры ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     kb = [[s] for s in SPECIALISTS]
     await update.message.reply_text(
@@ -92,7 +82,6 @@ async def handle_audit_callback(update: Update, context: ContextTypes.DEFAULT_TY
         ])
     )
 
-# --- Основная функция ---
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
