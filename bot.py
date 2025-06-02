@@ -1,10 +1,9 @@
-import os
 import logging
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, filters
 
-# --- Настройки ---
-TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+# --- Твой токен ---
+TOKEN = "7891087983:AAHJhRBlUHZEF1cb_76sTzl4IJF_RTPUwBk"
 
 # --- Логирование ---
 logging.basicConfig(
