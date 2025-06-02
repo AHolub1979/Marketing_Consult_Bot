@@ -56,7 +56,7 @@ INFO = {
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     kb = [[s] for s in SPECIALISTS]
     await update.message.reply_text(
-        "Здравствуйте! Я помогу выбрать подходящего специалиста для вашего бизнеса. Кого ищете?",
+        "Выберите специалиста:",
         reply_markup=ReplyKeyboardMarkup(kb, one_time_keyboard=True, resize_keyboard=True)
     )
 
@@ -66,7 +66,8 @@ async def handle_specialist(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             INFO[text],
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Заказать бесплатный аудит", callback_data=f"audit_{text}")]
+                [InlineKeyboardButton("Заказать бесплатный аудит", callback_data=f"audit_{text}")],
+                [InlineKeyboardButton("Выбрать другого специалиста", callback_data="choose_specialist")]
             ])
         )
     else:
@@ -74,20 +75,28 @@ async def handle_specialist(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_audit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()
-    await query.edit_message_text(
-        "Спасибо за интерес! Выберите удобный способ связи:",
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("Позвонить", url="tel:+48504776929")],
-            [InlineKeyboardButton("Написать в Telegram", url="https://t.me/belarus79")]
-        ])
-    )
+    if query.data == "choose_specialist":
+        kb = [[s] for s in SPECIALISTS]
+        await query.answer()
+        await query.edit_message_text(
+            "Выберите специалиста:",
+            reply_markup=ReplyKeyboardMarkup(kb, one_time_keyboard=True, resize_keyboard=True)
+        )
+    elif query.data.startswith("audit_"):
+        await query.answer()
+        await query.edit_message_text(
+            "Спасибо за интерес! Выберите удобный способ связи:",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Написать в Telegram", url="https://t.me/belarus79")],
+                [InlineKeyboardButton("Позвонить", url="tel:+48504776929")]
+            ])
+        )
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_specialist))
-    app.add_handler(CallbackQueryHandler(handle_audit_callback, pattern=r"^audit_"))
+    app.add_handler(CallbackQueryHandler(handle_audit_callback))
     app.run_polling()
 
 if __name__ == "__main__":
